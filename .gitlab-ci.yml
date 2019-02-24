@@ -1,0 +1,14 @@
+image: maven:latest
+
+maven-build:
+    stage: build
+    script: "mvn compile"
+
+maven-test:
+    stage: test
+    script: "mvn test"
+
+push-to-ec2:
+    stage: deploy
+    script:     
+      - bash .gitlab-deploy.sh   
