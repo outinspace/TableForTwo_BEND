@@ -29,4 +29,8 @@ public class ReservationsController {
     public Reservation getById(@PathVariable Integer id) {
         return reservations.getOne(id);
     }
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello world";
+    }
 }
