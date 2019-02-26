@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @SpringBootApplication(scanBasePackages={"space.outin.reservation_application"})
 @EntityScan(basePackages={"space.outin.reservation_application"})
