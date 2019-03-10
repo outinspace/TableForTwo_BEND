@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -20,6 +21,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Data;
 import space.outin.reservation_application.reservations.AuthDetails;
 import space.outin.reservation_application.reservations.Reservation;
+import space.outin.reservation_application.restaurants.Restaurant;
 
 @Data
 @Entity
@@ -35,8 +37,11 @@ public class User {
     private String firstName;
     private String lastName;
 
-    @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="user", fetch=FetchType.LAZY)
     private List<Reservation> reservations;
+
+    @OneToOne(fetch=FetchType.LAZY)
+    private Restaurant restaurant;
 
     @CreationTimestamp
     private Date created;

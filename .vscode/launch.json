@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ReservationApplication",
+            "request": "launch",
+            "mainClass": "space.outin.reservation_application.server.ReservationApplication",
+            "projectName": "reservation-application"
+        }
+    ]
+}

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,6 +24,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Data;
 import space.outin.reservation_application.reservations.AuthDetails;
 import space.outin.reservation_application.reservations.Reservation;
+import space.outin.reservation_application.users.User;
 
 @Data
 @Entity
@@ -31,10 +33,6 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @JsonProperty(access=Access.WRITE_ONLY)
-    @Embedded
-    private AuthDetails authDetails;
-
     private String name;
     private String imageUrl;
     private String description;
@@ -42,8 +40,11 @@ public class Restaurant {
     private int capacity;
 
     @JsonIgnore
-    @OneToMany(mappedBy="restaurant", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
     private List<Reservation> reservations;
+
+    @OneToOne(mappedBy="restaurant", fetch=FetchType.LAZY)
+    private User owner;
 
     @CreationTimestamp
     private Date created;
