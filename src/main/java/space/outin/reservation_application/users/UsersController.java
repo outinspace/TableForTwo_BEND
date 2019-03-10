@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import space.outin.reservation_application.users.User;
+import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 
 @RestController
 @RequestMapping("/users")
@@ -17,18 +19,31 @@ public class UsersController {
     @Autowired
     private UsersRepository users;
 
-    @PostMapping("/save")
-    public User save(@RequestBody User u) {
+    @Autowired
+    private AuthSession authSession;
+
+    @PostMapping("/create")
+    public User create(@RequestBody User u) {
+        // TODO: Validate user object
         return users.save(u);
     }
 
-    @PostMapping("/delete/{id}")
-    public void delete(@PathVariable Integer id) {
-        users.deleteById(id);
+    @PostMapping("/update/{id}")
+    public User update(@RequestParam("id") Integer id, @RequestBody User u) {
+        // TODO: Validate user object
+        u.setId(id);
+        return users.save(u);
+    }
+
+    @PostMapping("/delete")
+    public void delete() throws AuthenticationException {
+        authSession.verifyAuthOrThrow();
+        users.deleteById(authSession.getUserId().get());
     }
 
     @GetMapping("/get/{id}")
     public User get(@PathVariable Integer id) {
+        // TODO: This is just for testing
         return users.getOne(id);
     }
 }

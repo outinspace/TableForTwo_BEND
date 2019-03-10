@@ -4,12 +4,13 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
 @Component
-@Scope("session")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Data
 public class AuthSession {
 
@@ -18,15 +19,16 @@ public class AuthSession {
 
     private Optional<Integer> userId = Optional.empty();
 
-    public void loginSession(String userName, String password) throws AuthenticationException {
-        Optional<User> userResult = usersRepository.findOneByUserName(userName);
+    public User loginSession(String userName, String password) throws AuthenticationException {
+        Optional<User> userResult = usersRepository.findOneByUsername(userName);
         User currentUser = userResult.orElseThrow(
                 () -> new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS));
         
-        if (!password.equals(currentUser.getAuthDetails().getPassword())) {
+        if (!password.equals(currentUser.getPassword())) {
             throw new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS);
         }
         userId = Optional.of(currentUser.getId());
+        return currentUser;
     }
 
     public void logoutSession() {
@@ -35,13 +37,18 @@ public class AuthSession {
 
     public void verifyAuthOrThrow() throws AuthenticationException {
             userId.orElseThrow(
-                () -> new AuthenticationException("Session invalid. Please re-authenticate."));
+                () -> new AuthenticationException(AuthenticationException.INVALID_SESSION));
+    }
+
+    public User getCurrentUser() {
+        return usersRepository.getOne(getUserId().get());
     }
 
     public static class AuthenticationException extends Exception {
         private static final long serialVersionUID = 5287762282118902333L;
 
         public static String INVALID_CREDENTIALS = "Incorrect username or password.";
+        public static String INVALID_SESSION = "Session invalid. Please re-authenticate.";
 
         public AuthenticationException(String e) {
             super(e);

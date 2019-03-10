@@ -9,6 +9,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -21,6 +24,7 @@ import space.outin.reservation_application.users.User;
 public class Reservation {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @JsonProperty(access=Access.READ_ONLY)
     private Integer id;
 
     @ManyToOne
@@ -35,9 +39,11 @@ public class Reservation {
     private Date date;
     private String notes;
 
+    @JsonProperty(access=Access.READ_ONLY)
     @CreationTimestamp
     private Date created;
 
+    @JsonProperty(access=Access.READ_ONLY)
     @UpdateTimestamp
     private Date modified;   
 }

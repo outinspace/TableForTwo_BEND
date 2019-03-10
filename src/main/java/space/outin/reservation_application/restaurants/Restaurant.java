@@ -22,7 +22,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
-import space.outin.reservation_application.reservations.AuthDetails;
 import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.users.User;
 
@@ -31,6 +30,7 @@ import space.outin.reservation_application.users.User;
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty(access=Access.READ_ONLY)
     private Integer id;
 
     private String name;
@@ -39,16 +39,17 @@ public class Restaurant {
     private String address;
     private int capacity;
 
-    @JsonIgnore
     @OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
     private List<Reservation> reservations;
 
     @OneToOne(mappedBy="restaurant", fetch=FetchType.LAZY)
     private User owner;
 
+    @JsonProperty(access=Access.READ_ONLY)
     @CreationTimestamp
     private Date created;
 
+    @JsonProperty(access=Access.READ_ONLY)
     @UpdateTimestamp
     private Date modified;
 }

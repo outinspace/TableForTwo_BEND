@@ -3,8 +3,6 @@ package space.outin.reservation_application.users;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,13 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import lombok.Data;
-import space.outin.reservation_application.reservations.AuthDetails;
 import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.restaurants.Restaurant;
 
@@ -28,11 +25,13 @@ import space.outin.reservation_application.restaurants.Restaurant;
 public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @JsonProperty(access = Access.READ_ONLY)
     private Integer id;
 
-    @JsonIgnore
-    @Embedded
-    private AuthDetails authDetails;
+    private String username;
+
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private String password;
 
     private String firstName;
     private String lastName;
@@ -43,9 +42,11 @@ public class User {
     @OneToOne(fetch=FetchType.LAZY)
     private Restaurant restaurant;
 
+    @JsonProperty(access = Access.READ_ONLY)
     @CreationTimestamp
-    private Date created;
+    Date created;
 
+    @JsonProperty(access = Access.READ_ONLY)
     @UpdateTimestamp
-    private Date modified;
+    Date modified;
 }
