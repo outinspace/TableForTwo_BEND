@@ -31,6 +31,7 @@ public class UsersController {
     @PostMapping("/update/{id}")
     public User update(@RequestParam("id") Integer id, @RequestBody User u) {
         // TODO: Validate user object
+        // TODO: Auth
         u.setId(id);
         return users.save(u);
     }
@@ -38,6 +39,7 @@ public class UsersController {
     @PostMapping("/delete")
     public void delete() throws AuthenticationException {
         authSession.verifyAuthOrThrow();
+        authSession.logoutSession();
         users.deleteById(authSession.getUserId().get());
     }
 
