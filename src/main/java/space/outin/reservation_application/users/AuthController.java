@@ -20,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public User login(@RequestBody AuthDetails authDetails) throws AuthenticationException {
-        return authSession.loginSession(authDetails.getUsername(), authDetails.getPassword());
+        return authSession.loginSession(authDetails.getEmail(), authDetails.getPassword());
     }
 
     @GetMapping("/logout")
@@ -28,9 +28,15 @@ public class AuthController {
         authSession.logoutSession();
     }
 
+    @GetMapping("/hydrate")
+    public User hydrateSessionWithCurrentUser() throws AuthenticationException {
+        authSession.verifyAuthOrThrow();
+        return authSession.getCurrentUser();
+    }
+
     @Data
     public static class AuthDetails {
-        private String username;
+        private String email;
         private String password;
     }
 }

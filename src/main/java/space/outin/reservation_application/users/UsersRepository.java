@@ -10,5 +10,5 @@ import space.outin.reservation_application.users.User;
 @Repository
 public interface UsersRepository extends JpaRepository<User, Integer> {
     
-    public Optional<User> findOneByUsername(String userName);
+    public Optional<User> findOneByEmail(String email);
 }

@@ -19,8 +19,8 @@ public class AuthSession {
 
     private Optional<Integer> userId = Optional.empty();
 
-    public User loginSession(String userName, String password) throws AuthenticationException {
-        Optional<User> userResult = usersRepository.findOneByUsername(userName);
+    public User loginSession(String email, String password) throws AuthenticationException {
+        Optional<User> userResult = usersRepository.findOneByEmail(email);
         User currentUser = userResult.orElseThrow(
                 () -> new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS));
         
@@ -36,18 +36,18 @@ public class AuthSession {
     }
 
     public void verifyAuthOrThrow() throws AuthenticationException {
-            userId.orElseThrow(
-                () -> new AuthenticationException(AuthenticationException.INVALID_SESSION));
+        userId.orElseThrow(
+            () -> new AuthenticationException(AuthenticationException.INVALID_SESSION));
     }
 
     public User getCurrentUser() {
-        return usersRepository.getOne(getUserId().get());
+        return usersRepository.findById(userId.get()).get();
     }
 
     public static class AuthenticationException extends Exception {
         private static final long serialVersionUID = 5287762282118902333L;
 
-        public static String INVALID_CREDENTIALS = "Incorrect username or password.";
+        public static String INVALID_CREDENTIALS = "Incorrect email or password.";
         public static String INVALID_SESSION = "Session invalid. Please re-authenticate.";
 
         public AuthenticationException(String e) {
