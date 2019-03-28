@@ -43,7 +43,7 @@ public class RestaurantsController {
     }
 
     @PostMapping("/update/{id}")
-    public Restaurant update(@RequestParam("id") Integer id, @RequestBody Restaurant r) {
+    public Restaurant update(@PathVariable("id") Integer id, @RequestBody Restaurant r) {
         // TODO: validate restaurant object
         // TODO: Check credentials
         r.setId(id);

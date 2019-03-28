@@ -11,22 +11,24 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Null;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
+
 import lombok.Data;
 import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.restaurants.Restaurant;
 
 @Data
 @Entity
+@DynamicUpdate(true)
 public class User {
 
     @Id
@@ -40,7 +42,7 @@ public class User {
 
     @JsonProperty(access = Access.WRITE_ONLY)
     @NotEmpty
-    @Min(8L)
+    @Length(min = 8)
     private String password;
 
     @NotBlank
@@ -49,21 +51,34 @@ public class User {
     @NotBlank
     private String lastName;
 
-    @Null
+    @JsonProperty(access = Access.READ_ONLY)
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY)
     private List<Reservation> reservations;
 
-    @Null
+    @JsonProperty(access = Access.READ_ONLY)
     @OneToOne(fetch=FetchType.LAZY)
     private Restaurant restaurant;
 
-    @Null
     @JsonProperty(access = Access.READ_ONLY)
     @CreationTimestamp
     Date created;
 
-    @Null
     @JsonProperty(access = Access.READ_ONLY)
     @UpdateTimestamp
     Date modified;
+
+    public void mergeChanges(User newUser) {
+      if (newUser.email != null && !newUser.email.isEmpty()) {
+        this.email = newUser.email;
+      }
+      if (newUser.password != null && !newUser.password.isEmpty()) {
+        this.password = newUser.password;
+      }
+      if (newUser.firstName != null && !newUser.firstName.isEmpty()) {
+        this.firstName = newUser.firstName;
+      }
+      if (newUser.lastName != null && !newUser.lastName.isEmpty()) {
+        this.lastName = newUser.lastName;
+      }
+    }
 }
