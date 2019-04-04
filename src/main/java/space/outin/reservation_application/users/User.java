@@ -56,7 +56,7 @@ public class User {
     private List<Reservation> reservations;
 
     @JsonProperty(access = Access.READ_ONLY)
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     private Restaurant restaurant;
 
     @JsonProperty(access = Access.READ_ONLY)
