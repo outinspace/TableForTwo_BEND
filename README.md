@@ -1,13 +1,22 @@
-# CSCI4830 Reservation Application
-## Team Members
-- Trevor Burton
-- Lian Duan
-- Eli Trausch
-- Nicholas Wilson
+# Reservations Application Back-end
 
-We are creating a restaurant reservation web application that allows users to book reservations and restaurants to view and manage reservations made at their establishments. The app allows users to log in and view reservations that they have previously created, as well as create new reservations in their name. It also provides functionality for restaurants to log in and manager information about their restaurants and view all the current reservations.
+Before running this project, you must install Java >=1.8 on your machine.
 
-# Running the project
+- Install Maven: https://maven.apache.org/download.cgi
+- Install Visual Studio Code: https://code.visualstudio.com/download
+
+
+# Running the application locally
 1. `cd` into the project root
 2. `mvn package` to build the jar file
 3. `java -jar ./target/*.jar` to run locally
+
+### Deploy to the server
+Whenever you push your committed code to gitlab, the project will be compiled and copied over to the EC2 server. This process should take 5 minutes or less. You can check the status in the jobs section of the gitlab repo.
+
+### Pushing your changes to gitlab
+- Note: Only push your code to gitlab if it compiles and runs. Otherwise, it will be a headache for others when they pull your incomplete changes.
+```
+git add .
+git commit -m "<INSERT MESSAGE>"
+git push
