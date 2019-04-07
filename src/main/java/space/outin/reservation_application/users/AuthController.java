@@ -1,5 +1,9 @@
 package space.outin.reservation_application.users;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +23,7 @@ public class AuthController {
     private AuthSession authSession;
 
     @PostMapping("/login")
-    public User login(@RequestBody AuthDetails authDetails) throws AuthenticationException {
+    public User login(@RequestBody @Valid AuthDetails authDetails) throws AuthenticationException {
         return authSession.loginSession(authDetails.getEmail(), authDetails.getPassword());
     }
 
@@ -31,12 +35,17 @@ public class AuthController {
     @GetMapping("/hydrate")
     public User hydrateSessionWithCurrentUser() throws AuthenticationException {
         authSession.verifyAuthOrThrow();
-        return authSession.getCurrentUser();
+        return authSession.fetchCurrentUser();
     }
 
     @Data
     public static class AuthDetails {
+
+        @Email
+        @NotBlank
         private String email;
+
+        @NotBlank
         private String password;
     }
 }

@@ -5,6 +5,8 @@ Before running this project, you must install Java >=1.8 on your machine.
 - Install Maven: https://maven.apache.org/download.cgi
 - Install Visual Studio Code: https://code.visualstudio.com/download
 
+To get help, search for documentation on Spring Boot.
+
 # Running the application locally
 1. `cd` into the project root
 2. `mvn package` to build the jar file

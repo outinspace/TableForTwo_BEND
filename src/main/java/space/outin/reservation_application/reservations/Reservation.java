@@ -17,6 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
 import space.outin.reservation_application.restaurants.Restaurant;
+import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.users.User;
 
 @Data
@@ -45,5 +46,5 @@ public class Reservation {
 
     @JsonProperty(access=Access.READ_ONLY)
     @UpdateTimestamp
-    private Date modified;   
+    private Date modified = new Date();   
 }

@@ -40,7 +40,7 @@ public class AuthSession {
             () -> new AuthenticationException(AuthenticationException.INVALID_SESSION));
     }
 
-    public User getCurrentUser() {
+    public User fetchCurrentUser() {
         return usersRepository.findById(userId.get()).get();
     }
 

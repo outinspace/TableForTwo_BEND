@@ -3,8 +3,10 @@ package space.outin.reservation_application.users;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,8 @@ import space.outin.reservation_application.restaurants.RestaurantsRepository;
 import space.outin.reservation_application.users.User;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 import space.outin.reservation_application.users.UserService.UserException;
+import space.outin.reservation_application.users.transfer.DeleteConfirmation;
+import space.outin.reservation_application.users.transfer.UserChanges;
 
 @RestController
 @RequestMapping("/users")
@@ -36,37 +40,35 @@ public class UsersController {
         u.setId(null);
         verifyEmailIsUnique(null, u.getEmail());
         authSession.logoutSession();
-
-        // Create restaurant if owner
         if (isOwner) {
             Restaurant r = new Restaurant();
             u.setRestaurant(restaurantsRepository.save(r));
         }
 
-        // Save and login to session
         users.save(u);
         return authSession.loginSession(u.getEmail(), u.getPassword());
     }
 
-    @PostMapping("/update/{id}")
-    public User update(@PathVariable("id") Integer id, @RequestBody @Valid User changes)
+    @PostMapping("/update")
+    public User update(@RequestBody @Valid UserChanges changes)
             throws UserAlreadyExistsException, AuthenticationException {
         authSession.verifyAuthOrThrow();
-        // User newUser = users.findById(id).get();
-        if (changes.getEmail() != null && !changes.getEmail().isEmpty()) {
-            verifyEmailIsUnique(id, changes.getEmail());
-        }
-        // newUser.mergeChanges(changes);
-        // newUser.setId(id);
-        changes.setId(id);
+        User user = authSession.fetchCurrentUser();
 
-        return users.save(changes);
+        if (changes.getEmail().isPresent()) {
+            String newEmail = changes.getEmail().get();
+            if (!user.getEmail().equals(newEmail)) {
+                verifyEmailIsUnique(user.getId(), newEmail);
+            }
+        }
+        user.applyChanges(changes);
+        return users.save(user);
     }
 
     @PostMapping("/delete")
     public void delete(@RequestBody DeleteConfirmation passwordCheck) throws AuthenticationException, UserException {
         authSession.verifyAuthOrThrow();
-        User currentUser = authSession.getCurrentUser();
+        User currentUser = authSession.fetchCurrentUser();
         if (!currentUser.getPassword().equals(passwordCheck.getPassword())) {
             throw new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS);
         }
@@ -74,22 +76,11 @@ public class UsersController {
         userService.deleteUser(currentUser);
     }
 
-    @GetMapping("/get/{id}")
-    public User get(@PathVariable Integer id) {
-        // TODO: This is just for testing
-        return users.getOne(id);
-    }
-
     public void verifyEmailIsUnique(Integer id, String email) throws UserAlreadyExistsException {
         Optional<User> existingUser = users.findOneByEmail(email);
         if (existingUser.isPresent() && existingUser.get().getId() != id) {
             throw new UserAlreadyExistsException();
         }
-    }
-
-    @Data
-    public static class DeleteConfirmation {
-        private String password;
     }
 
     public static class UserAlreadyExistsException extends Exception {

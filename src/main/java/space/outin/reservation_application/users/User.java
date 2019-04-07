@@ -1,5 +1,6 @@
 package space.outin.reservation_application.users;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,8 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -25,10 +26,10 @@ import org.hibernate.validator.constraints.Length;
 import lombok.Data;
 import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.restaurants.Restaurant;
+import space.outin.reservation_application.users.transfer.UserChanges;
 
 @Data
 @Entity
-@DynamicUpdate(true)
 public class User {
 
     @Id
@@ -36,13 +37,13 @@ public class User {
     @JsonProperty(access = Access.READ_ONLY)
     private Integer id;
 
-    @NotEmpty
     @Email
+    @NotBlank
     private String email;
 
     @JsonProperty(access = Access.WRITE_ONLY)
-    @NotEmpty
     @Length(min = 8)
+    @NotBlank
     private String password;
 
     @NotBlank
@@ -51,9 +52,9 @@ public class User {
     @NotBlank
     private String lastName;
 
-    @JsonProperty(access = Access.READ_ONLY)
+    @JsonIgnore
     @OneToMany(mappedBy="user", fetch=FetchType.LAZY)
-    private List<Reservation> reservations;
+    private List<Reservation> reservations = new ArrayList<Reservation>();
 
     @JsonProperty(access = Access.READ_ONLY)
     @OneToOne
@@ -65,20 +66,12 @@ public class User {
 
     @JsonProperty(access = Access.READ_ONLY)
     @UpdateTimestamp
-    Date modified;
+    Date modified = new Date();
 
-    public void mergeChanges(User newUser) {
-      if (newUser.email != null && !newUser.email.isEmpty()) {
-        this.email = newUser.email;
-      }
-      if (newUser.password != null && !newUser.password.isEmpty()) {
-        this.password = newUser.password;
-      }
-      if (newUser.firstName != null && !newUser.firstName.isEmpty()) {
-        this.firstName = newUser.firstName;
-      }
-      if (newUser.lastName != null && !newUser.lastName.isEmpty()) {
-        this.lastName = newUser.lastName;
-      }
+    public void applyChanges(UserChanges changes) {
+        changes.getEmail().ifPresent(email -> this.email = email);
+        changes.getPassword().ifPresent(password -> this.password = password);
+        changes.getFirstName().ifPresent(firstName -> this.firstName = firstName);
+        changes.getLastName().ifPresent(lastName -> this.lastName = lastName);
     }
 }

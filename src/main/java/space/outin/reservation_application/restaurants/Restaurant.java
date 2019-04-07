@@ -1,18 +1,14 @@
 package space.outin.reservation_application.restaurants;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -22,7 +18,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
 import space.outin.reservation_application.reservations.Reservation;
-import space.outin.reservation_application.users.User;
+import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 
 @Data
 @Entity
@@ -47,5 +43,13 @@ public class Restaurant {
 
     @JsonProperty(access=Access.READ_ONLY)
     @UpdateTimestamp
-    private Date modified;
+    private Date modified = new Date();
+
+    public void applyChanges(RestaurantChanges changes) {
+        changes.getName().ifPresent(name -> this.name = name);
+        changes.getImageUrl().ifPresent(imageUrl -> this.imageUrl = imageUrl);
+        changes.getDescription().ifPresent(description -> this.description = description);
+        changes.getAddress().ifPresent(address -> this.address = address);
+        changes.getCapacity().ifPresent(capacity -> this.capacity = capacity);
+    }
 }
