@@ -8,14 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import space.outin.reservation_application.restaurants.Restaurant;
 import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.users.AuthSession;
-import space.outin.reservation_application.users.User;
-import space.outin.reservation_application.users.UsersRepository;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 
 @RestController
@@ -26,26 +23,43 @@ public class RestaurantsController {
     private RestaurantsRepository restaurantsRepository;
 
     @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
     private AuthSession authSession;
 
     @PostMapping("/update")
     public Restaurant update(@RequestBody @Valid RestaurantChanges changes) 
             throws AuthenticationException, RestaurantException {
-        authSession.verifyAuthOrThrow();
-        Restaurant restaurant = authSession.fetchCurrentUser().getRestaurant();
-        if (restaurant == null) {
-            throw new RestaurantException(RestaurantException.NONEXISTENT);
-        }
+        Restaurant restaurant = fetchCurrentRestaurantOrThrow();
         restaurant.applyChanges(changes);
+        return restaurantsRepository.save(restaurant);
+    }
+
+    @PostMapping("/publish")
+    public Restaurant publish() throws RestaurantException, AuthenticationException {
+        Restaurant restaurant = fetchCurrentRestaurantOrThrow();
+        // TODO: Validate info
+        restaurant.setPublished(true);
+        return restaurantsRepository.save(restaurant);
+    }
+
+    @PostMapping("/unpublish")
+    public Restaurant unpublish() throws RestaurantException, AuthenticationException {
+        Restaurant restaurant = fetchCurrentRestaurantOrThrow();
+        restaurant.setPublished(false);
         return restaurantsRepository.save(restaurant);
     }
 
     @GetMapping("/get/{id}")
     public Restaurant get(@PathVariable Integer id) {
         return restaurantsRepository.getOne(id);
+    }
+
+    private Restaurant fetchCurrentRestaurantOrThrow() throws RestaurantException, AuthenticationException {
+        authSession.verifyAuthOrThrow();
+        Restaurant restaurant = authSession.fetchCurrentUser().getRestaurant();
+        if (restaurant == null) {
+            throw new RestaurantException(RestaurantException.NONEXISTENT);
+        }
+        return restaurant;
     }
 
     public static class RestaurantException extends Exception {

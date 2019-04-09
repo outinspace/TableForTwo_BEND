@@ -33,6 +33,7 @@ public class Restaurant {
     private String description;
     private String address;
     private int capacity;
+    private boolean published;
 
     @OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
     private List<Reservation> reservations;
