@@ -3,6 +3,7 @@ package space.outin.reservation_application.reservations;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,7 +18,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
 import space.outin.reservation_application.restaurants.Restaurant;
-import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.users.User;
 
 @Data
@@ -32,7 +32,7 @@ public class Reservation {
     @JoinColumn
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Restaurant restaurant;
 

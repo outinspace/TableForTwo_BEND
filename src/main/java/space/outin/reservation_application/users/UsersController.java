@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.Data;
 import space.outin.reservation_application.restaurants.Restaurant;
 import space.outin.reservation_application.restaurants.RestaurantsRepository;
 import space.outin.reservation_application.users.User;

@@ -1,8 +1,11 @@
 package space.outin.reservation_application.restaurants;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.restaurants.Restaurant;
 import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.users.AuthSession;
@@ -24,6 +28,17 @@ public class RestaurantsController {
 
     @Autowired
     private AuthSession authSession;
+
+    @GetMapping("/all")
+    public List<Restaurant> getAllRestaurants() {
+        return restaurantsRepository.findAll();
+    }
+
+    @GetMapping("/reservations")
+    public List<Reservation> getRestaurantsReservations() throws RestaurantException, AuthenticationException {
+        Restaurant restaurant = fetchCurrentRestaurantOrThrow();
+        return restaurant.getReservations();
+    }
 
     @PostMapping("/update")
     public Restaurant update(@RequestBody @Valid RestaurantChanges changes) 
