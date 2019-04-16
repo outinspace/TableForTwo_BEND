@@ -30,7 +30,7 @@ public class ReservationsController {
     public List<Reservation> getMyReservations() throws AuthenticationException {
         authSession.verifyAuthOrThrow();
         User current = authSession.fetchCurrentUser();
-        return current.getReservations();
+        return reservationsRepository.findAllByUser(current);
     }
 
     @PostMapping("/save")
