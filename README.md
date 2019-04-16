@@ -4,6 +4,7 @@ Before running this project, you must install Java >=1.8 on your machine.
 
 - Install Maven: https://maven.apache.org/download.cgi
 - Install Visual Studio Code: https://code.visualstudio.com/download
+- Install Lombok plugin for Visual Studio Code
 
 To get help, search for documentation on Spring Boot.
 

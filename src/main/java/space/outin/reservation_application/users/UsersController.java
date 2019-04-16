@@ -3,13 +3,7 @@ package space.outin.reservation_application.users;
 import java.util.Optional;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +22,7 @@ import space.outin.reservation_application.users.transfer.UserChanges;
 @RequestMapping("/users")
 public class UsersController {
 
-    private @Autowired UsersRepository users;
+    private @Autowired UsersRepository usersRepository;
     private @Autowired RestaurantsRepository restaurantsRepository;
     private @Autowired AuthSession authSession;
     private @Autowired UserService userService;
@@ -44,7 +38,7 @@ public class UsersController {
             u.setRestaurant(restaurantsRepository.save(r));
         }
 
-        users.save(u);
+        usersRepository.save(u);
         return authSession.loginSession(u.getEmail(), u.getPassword());
     }
 
@@ -61,7 +55,7 @@ public class UsersController {
             }
         }
         user.applyChanges(changes);
-        return users.save(user);
+        return usersRepository.save(user);
     }
 
     @PostMapping("/delete")
@@ -76,7 +70,7 @@ public class UsersController {
     }
 
     public void verifyEmailIsUnique(Integer id, String email) throws UserAlreadyExistsException {
-        Optional<User> existingUser = users.findOneByEmail(email);
+        Optional<User> existingUser = usersRepository.findOneByEmail(email);
         if (existingUser.isPresent() && existingUser.get().getId() != id) {
             throw new UserAlreadyExistsException();
         }

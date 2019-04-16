@@ -1,8 +1,6 @@
 package space.outin.reservation_application.users;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.Data;
 import space.outin.reservation_application.users.User;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
+import space.outin.reservation_application.users.transfer.AuthDetails;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,16 +34,5 @@ public class AuthController {
     public User hydrateSessionWithCurrentUser() throws AuthenticationException {
         authSession.verifyAuthOrThrow();
         return authSession.fetchCurrentUser();
-    }
-
-    @Data
-    public static class AuthDetails {
-
-        @Email
-        @NotBlank
-        private String email;
-
-        @NotBlank
-        private String password;
     }
 }
