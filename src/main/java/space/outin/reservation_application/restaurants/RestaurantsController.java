@@ -1,6 +1,7 @@
 package space.outin.reservation_application.restaurants;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -41,7 +42,7 @@ public class RestaurantsController {
     }
 
     @PostMapping("/update")
-    public Restaurant update(@RequestBody @Valid RestaurantChanges changes) 
+    public Restaurant update(@RequestBody @Valid RestaurantChanges changes)
             throws AuthenticationException, RestaurantException {
         Restaurant restaurant = fetchCurrentRestaurantOrThrow();
         restaurant.applyChanges(changes);
@@ -64,8 +65,8 @@ public class RestaurantsController {
     }
 
     @GetMapping("/get/{id}")
-    public Restaurant get(@PathVariable Integer id) {
-        return restaurantsRepository.getOne(id);
+    public Optional<Restaurant> get(@PathVariable Integer id) {
+        return restaurantsRepository.findById(id);
     }
 
     private Restaurant fetchCurrentRestaurantOrThrow() throws RestaurantException, AuthenticationException {

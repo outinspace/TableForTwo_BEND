@@ -1,6 +1,8 @@
 package space.outin.reservation_application.reservations;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -10,10 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import space.outin.reservation_application.users.AuthSession;
 import space.outin.reservation_application.users.User;
+import space.outin.reservation_application.restaurants.Restaurant;
+import space.outin.reservation_application.restaurants.RestaurantsController;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 
 @RestController
@@ -22,6 +27,9 @@ public class ReservationsController {
 
     @Autowired
     private ReservationsRepository reservationsRepository;
+
+    @Autowired
+    private RestaurantsController restaurantsController;
 
     @Autowired
     private AuthSession authSession;
@@ -33,8 +41,12 @@ public class ReservationsController {
         return reservationsRepository.findAllByUser(current);
     }
 
-    @PostMapping("/save")
-    public Reservation save(@RequestBody @Valid Reservation r) {
+    @PostMapping("/create")
+    public Reservation create(@RequestBody @Valid Reservation r, @RequestParam(required = true) Integer restId) {
+        r.setId(null);
+        r.setUser(authSession.fetchCurrentUser());
+        Restaurant restaurant = toList(restaurantsController.get(restId)).get(0);
+        r.setRestaurant(restaurant);
         return reservationsRepository.save(r);
     }
 
@@ -58,5 +70,11 @@ public class ReservationsController {
         public ReservationException(String s) {
             super(s);
         }
+    }
+
+    public static <T> List<T> toList(Optional<T> option) {
+        return option.
+                map(Collections::singletonList).
+                orElse(Collections.emptyList());
     }
 }
