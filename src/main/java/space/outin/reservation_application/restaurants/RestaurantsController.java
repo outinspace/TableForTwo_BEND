@@ -65,8 +65,8 @@ public class RestaurantsController {
     }
 
     @GetMapping("/get/{id}")
-    public Optional<Restaurant> get(@PathVariable Integer id) {
-        return restaurantsRepository.findById(id);
+    public Restaurant get(@PathVariable Integer id) {
+        return restaurantsRepository.findById(id).get();
     }
 
     private Restaurant fetchCurrentRestaurantOrThrow() throws RestaurantException, AuthenticationException {

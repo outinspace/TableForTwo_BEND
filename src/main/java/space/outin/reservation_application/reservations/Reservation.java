@@ -32,7 +32,7 @@ public class Reservation {
     @JoinColumn
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn
     private Restaurant restaurant;
 

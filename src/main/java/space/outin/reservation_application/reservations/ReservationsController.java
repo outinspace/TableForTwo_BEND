@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import space.outin.reservation_application.users.AuthSession;
 import space.outin.reservation_application.users.User;
 import space.outin.reservation_application.restaurants.Restaurant;
-import space.outin.reservation_application.restaurants.RestaurantsController;
+import space.outin.reservation_application.restaurants.RestaurantsRepository;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 
 @RestController
@@ -29,7 +29,7 @@ public class ReservationsController {
     private ReservationsRepository reservationsRepository;
 
     @Autowired
-    private RestaurantsController restaurantsController;
+    private RestaurantsRepository restaurantsRepository;
 
     @Autowired
     private AuthSession authSession;
@@ -41,13 +41,22 @@ public class ReservationsController {
         return reservationsRepository.findAllByUser(current);
     }
 
-    @PostMapping("/create")
-    public Reservation create(@RequestBody @Valid Reservation r, @RequestParam(required = true) Integer restId) {
-        r.setId(null);
-        r.setUser(authSession.fetchCurrentUser());
-        Restaurant restaurant = toList(restaurantsController.get(restId)).get(0);
-        r.setRestaurant(restaurant);
-        return reservationsRepository.save(r);
+    @PostMapping("/create/{restaurantId}")
+    public Reservation create(
+        @RequestBody @Valid Reservation reservation, 
+        @PathVariable Integer restaurantId
+    ) throws ReservationException {
+        reservation.setId(null);
+        reservation.setUser(authSession.fetchCurrentUser());
+        Optional<Restaurant> restaurant = restaurantsRepository.findById(restaurantId);
+        if (restaurant.isPresent()) {
+            reservation.setRestaurant(restaurant.get());
+        } else {
+            throw new ReservationException(ReservationException.RESTAURANT_NONEXISTENT);
+        }
+        // Capacity check
+        // Date check
+        return reservationsRepository.save(reservation);
     }
 
     @PostMapping("/delete/{id}")
@@ -67,6 +76,7 @@ public class ReservationsController {
 
     public static class ReservationException extends Exception {
         public static String RESERVATION_NONEXISTENT = "Cannot perform action. Reservation does not exist.";
+        public static String RESTAURANT_NONEXISTENT = "Cannot create reservation. Restaurant does not exist.";
         public ReservationException(String s) {
             super(s);
         }
