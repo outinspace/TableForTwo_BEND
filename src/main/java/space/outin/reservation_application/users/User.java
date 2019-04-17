@@ -33,7 +33,6 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonProperty(access = Access.READ_ONLY)
     private Integer id;
 
     @Email
