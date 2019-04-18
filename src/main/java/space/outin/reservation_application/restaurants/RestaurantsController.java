@@ -1,7 +1,10 @@
 package space.outin.reservation_application.restaurants;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -18,6 +21,7 @@ import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.restaurants.Restaurant;
 import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.users.AuthSession;
+import space.outin.reservation_application.users.User;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 
 @RestController
@@ -33,6 +37,18 @@ public class RestaurantsController {
     @GetMapping("/all")
     public List<Restaurant> getAllRestaurants() {
         return restaurantsRepository.findAllByPublished(true);
+    }
+
+    @GetMapping("/favorites")
+    public List<Restaurant> getMyFavoriteRestaurants() {
+        User currentUser = authSession.fetchCurrentUser();
+        List<Reservation> reservations = currentUser.getReservations();
+        reservations.sort((a, b) -> a.getCreated().compareTo(b.getCreated()));
+        return reservations.stream()
+            .map(r -> r.getRestaurant())
+            .distinct()
+            .limit(10L)
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/reservations")
