@@ -3,6 +3,7 @@ package space.outin.reservation_application.restaurants;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ public class Restaurant {
 
     private String name;
     private String imageUrl;
+    @Column(columnDefinition = "VARCHAR(1500)")
     private String description;
     private String address;
     private int capacity;

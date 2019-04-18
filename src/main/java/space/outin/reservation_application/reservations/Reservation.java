@@ -2,6 +2,7 @@ package space.outin.reservation_application.reservations;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,6 +39,7 @@ public class Reservation {
 
     private Integer people;
     private Date date;
+    @Column(columnDefinition = "VARCHAR(256)")
     private String notes;
 
     @JsonProperty(access=Access.READ_ONLY)
