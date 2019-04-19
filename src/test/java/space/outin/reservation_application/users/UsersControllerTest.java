@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import space.outin.reservation_application.restaurants.Restaurant;
+import space.outin.reservation_application.restaurants.RestaurantsRepository;
 import space.outin.reservation_application.server.ReservationApplication;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 import space.outin.reservation_application.users.UserService.UserException;
@@ -26,6 +28,7 @@ public class UsersControllerTest {
 
   private @Autowired UsersController usersController;
   private @Autowired UsersRepository usersRepository;
+  private @Autowired RestaurantsRepository restaurantsRepository;
   private @Autowired AuthSession authSession;
 
   private User unsavedUser;
@@ -40,7 +43,7 @@ public class UsersControllerTest {
   }
 
   @Test
-  public void createCustomerWorks() throws UserAlreadyExistsException, AuthenticationException {
+  public void createCustomerUserWorks() throws UserAlreadyExistsException, AuthenticationException {
     User savedUser = usersController.create(unsavedUser, false);
     assertThat(savedUser).isNotNull();
     assertThat(savedUser.created).isCloseTo(new Date(), TimeUnit.MINUTES.toMillis(1));
@@ -49,7 +52,7 @@ public class UsersControllerTest {
   }
 
   @Test
-  public void createOwnerWorks() throws UserAlreadyExistsException, AuthenticationException {
+  public void createOwnerUserWorks() throws UserAlreadyExistsException, AuthenticationException {
     User savedUser = usersController.create(unsavedUser, true);
     assertThat(savedUser).isNotNull();
     assertThat(savedUser.getRestaurant()).isNotNull();
@@ -57,8 +60,24 @@ public class UsersControllerTest {
   }
 
   @Test(expected = JpaSystemException.class)
-  public void deleteCustomerWorks() throws AuthenticationException, UserException {
+  public void deleteCustomerUserWorks() throws AuthenticationException, UserException {
     User savedUser = usersRepository.save(unsavedUser);
+    authSession.setUserId(Optional.of(savedUser.getId()));
+    DeleteConfirmation confirmation = new DeleteConfirmation();
+    confirmation.setPassword(savedUser.getPassword());
+    usersController.delete(confirmation);
+    authSession.setUserId(Optional.empty());
+    usersRepository.getOne(savedUser.getId());
+  }
+
+  @Test
+  public void deleteOwnerUserWorks() throws AuthenticationException, UserException {
+    Restaurant r = new Restaurant();
+    r = restaurantsRepository.save(r);
+    User savedUser = usersRepository.save(unsavedUser);
+    savedUser.setRestaurant(r);
+    savedUser = usersRepository.save(savedUser);
+
     authSession.setUserId(Optional.of(savedUser.getId()));
     DeleteConfirmation confirmation = new DeleteConfirmation();
     confirmation.setPassword(savedUser.getPassword());
