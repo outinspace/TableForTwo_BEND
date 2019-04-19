@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import lombok.Builder;
 import lombok.Data;
 import space.outin.reservation_application.reservations.Reservation;
 import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
