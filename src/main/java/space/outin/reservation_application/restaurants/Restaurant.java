@@ -29,7 +29,7 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty(access=Access.READ_ONLY)
     private Integer id;
-
+    
     private String name;
     private String imageUrl;
     @Column(columnDefinition = "VARCHAR(1500)")

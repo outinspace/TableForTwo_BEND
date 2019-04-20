@@ -1,6 +1,7 @@
 package space.outin.reservation_application.reservations;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ import space.outin.reservation_application.users.AuthSession.AuthenticationExcep
 @RestController
 @RequestMapping("/reservations")
 public class ReservationsController {
+    static final long ONE_MINUTE_IN_MILLIS=60000;
 
     private @Autowired ReservationsRepository reservationsRepository;
     private @Autowired RestaurantsRepository restaurantsRepository;
@@ -53,12 +55,11 @@ public class ReservationsController {
             reservation.setRestaurant(restaurant.get());
         } else {
             throw new ReservationException(ReservationException.RESTAURANT_NONEXISTENT);
-        }
-        // Capacity check
-        // Date check
+        } 
+        checkDateAndCapacity(reservation);
         return reservationsRepository.save(reservation);
     }
-
+    
     @PostMapping("/delete/{id}")
     public void delete(@PathVariable Integer id) throws ReservationException, AuthenticationException {
         authSession.verifyAuthOrThrow();
@@ -66,11 +67,11 @@ public class ReservationsController {
         if (reservation == null) {
             throw new ReservationException(ReservationException.RESERVATION_NONEXISTENT);
         } else if (userOwnsReservationOrRestaurant(reservation, authSession.getUserId().get())) {
-            throw new ReservationException(ReservationException.NOT_OWNER);
+            throw new ReservationException(ReservationException.INVALID_PERMISSIONS);
         }
         reservationsRepository.deleteById(id);
     }
-
+    
     @GetMapping("/get/{id}")
     public Reservation getById(@PathVariable Integer id) {
         return reservationsRepository.getOne(id);
@@ -90,15 +91,41 @@ public class ReservationsController {
     public static class ReservationException extends Exception {
         public static String RESERVATION_NONEXISTENT = "Reservation does not exist.";
         public static String RESTAURANT_NONEXISTENT = "Restaurant does not exist.";
-        public static String NOT_OWNER = "You do not have permissions to perform this action.";
+        public static String RESTAURANT_AT_CAPACITY = "Restaurant is at capacity.";
+        public static String TIME_IMPOSSIBLE = "Date has already passed.";
+        public static String INVALID_PERMISSIONS = "You do not have permissions to perform this action.";
         public ReservationException(String s) {
             super(s);
         }
     }
-
+    
+    // ???????????
     public static <T> List<T> toList(Optional<T> option) {
         return option.
-                map(Collections::singletonList).
-                orElse(Collections.emptyList());
+        map(Collections::singletonList).
+        orElse(Collections.emptyList());
+    }
+    
+    private void checkDateAndCapacity (Reservation reservation) throws ReservationException {
+        Restaurant restaurant = reservation.getRestaurant();
+        Date date = reservation.getDate();
+        Date time = new Date(); 
+        if (date.compareTo(time) < 0) { //if before current time
+            throw new ReservationException(ReservationException.TIME_IMPOSSIBLE);
+        }
+        List<Reservation> currentReservationsForRestaurant = restaurant.getReservations();
+        int reseCount = 0;
+        long t = date.getTime();
+        Date afterAddingThirtyMins = new Date (t + (30 * ONE_MINUTE_IN_MILLIS));
+        Date afterSubtractingThirtyMins = new Date (t - (30 * ONE_MINUTE_IN_MILLIS));
+        for (Reservation rese : currentReservationsForRestaurant) {
+            if (rese.getDate().compareTo(afterAddingThirtyMins) <= 0 && rese.getDate().compareTo(afterSubtractingThirtyMins) >= 0 ) {
+                reseCount++;
+            }
+        }
+        if (reseCount >= restaurant.getCapacity()) {
+            throw new ReservationException(ReservationException.RESTAURANT_AT_CAPACITY);
+        }
+        
     }
 }
