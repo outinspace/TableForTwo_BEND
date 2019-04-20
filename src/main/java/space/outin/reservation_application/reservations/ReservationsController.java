@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import space.outin.reservation_application.users.AuthSession;
 import space.outin.reservation_application.users.User;
+import space.outin.reservation_application.users.UsersRepository;
 import space.outin.reservation_application.restaurants.Restaurant;
 import space.outin.reservation_application.restaurants.RestaurantsRepository;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
@@ -25,11 +26,9 @@ import space.outin.reservation_application.users.AuthSession.AuthenticationExcep
 @RequestMapping("/reservations")
 public class ReservationsController {
 
-    @Autowired
-    private ReservationsRepository reservationsRepository;
-
-    @Autowired
-    private RestaurantsRepository restaurantsRepository;
+    private @Autowired ReservationsRepository reservationsRepository;
+    private @Autowired RestaurantsRepository restaurantsRepository;
+    private @Autowired UsersRepository usersRepository;
 
     @Autowired
     private AuthSession authSession;
@@ -45,7 +44,8 @@ public class ReservationsController {
     public Reservation create(
         @RequestBody @Valid Reservation reservation, 
         @PathVariable Integer restaurantId
-    ) throws ReservationException {
+    ) throws ReservationException, AuthenticationException {
+        authSession.verifyAuthOrThrow();
         reservation.setId(null);
         reservation.setUser(authSession.fetchCurrentUser());
         Optional<Restaurant> restaurant = restaurantsRepository.findById(restaurantId);
@@ -60,12 +60,14 @@ public class ReservationsController {
     }
 
     @PostMapping("/delete/{id}")
-    public void delete(@PathVariable Integer id) throws ReservationException {
+    public void delete(@PathVariable Integer id) throws ReservationException, AuthenticationException {
+        authSession.verifyAuthOrThrow();
         Reservation reservation = reservationsRepository.getOne(id);
         if (reservation == null) {
             throw new ReservationException(ReservationException.RESERVATION_NONEXISTENT);
+        } else if (userOwnsReservationOrRestaurant(reservation, authSession.getUserId().get())) {
+            throw new ReservationException(ReservationException.NOT_OWNER);
         }
-        // Check if user owns reservation or if user owns restaurant who ownes reservation
         reservationsRepository.deleteById(id);
     }
 
@@ -74,9 +76,21 @@ public class ReservationsController {
         return reservationsRepository.getOne(id);
     }
 
+    public boolean userOwnsReservationOrRestaurant(Reservation reservation, Integer currentUserId) {
+        if (reservation.getUser().getId() == currentUserId) {
+            return true;
+        }
+        Optional<User> restaurantOwner = usersRepository.findOneByRestaurant(reservation.getRestaurant());
+        if (restaurantOwner.isPresent() && restaurantOwner.get().getId() == currentUserId) {
+            return true;
+        }
+        return false;
+    }
+
     public static class ReservationException extends Exception {
-        public static String RESERVATION_NONEXISTENT = "Cannot perform action. Reservation does not exist.";
-        public static String RESTAURANT_NONEXISTENT = "Cannot create reservation. Restaurant does not exist.";
+        public static String RESERVATION_NONEXISTENT = "Reservation does not exist.";
+        public static String RESTAURANT_NONEXISTENT = "Restaurant does not exist.";
+        public static String NOT_OWNER = "You do not have permissions to perform this action.";
         public ReservationException(String s) {
             super(s);
         }
