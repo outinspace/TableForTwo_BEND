@@ -13,16 +13,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import space.outin.reservation_application.restaurants.RestaurantsController.RestaurantException;
 import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.server.ReservationApplication;
 import space.outin.reservation_application.users.AuthSession;
 import space.outin.reservation_application.users.User;
-import space.outin.reservation_application.users.UsersController;
 import space.outin.reservation_application.users.UsersRepository;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
 import space.outin.reservation_application.users.UsersController.UserAlreadyExistsException;
@@ -72,25 +69,27 @@ public class RestaurantsControllerTest {
     @Test
     @Transactional
     public void unpublishRestaurantWorks() throws RestaurantException, AuthenticationException {
-        Restaurant rest = restController.unpublish();
-        assertThat(!rest.isPublished());
-        List<Restaurant> restList = restRepository.findAllByPublished(true);
-        assertThat(restList).isEmpty();
+        Restaurant restaurant = restController.unpublish();
+        assertThat(!restaurant.isPublished());
+        List<Restaurant> restaurantList = restRepository.findAllByPublished(true);
+        assertThat(restaurantList).isEmpty();
 
     }
 
-    // @Test
-    // @Transactional
-    // public void updateRestaurantWorks() throws RestaurantException, AuthenticationException {
-    //     RestaurantChanges changes = new RestaurantChanges();
-    //     changes.setAddress(Optional.of("123 Main Street"));
-    //     changes.setCapacity(Optional.of(50));
-    //     changes.setDescription(Optional.of("Testing changes to restaurant"));
-    //     changes.setName(Optional.of("Test Restaurant"));
-    //     Restaurant rest = restController.update(changes);
-    //     assertThat(rest.getAddress()).isEqualTo("123 Main Street");
-    //     assertThat(rest.getCapacity()).isEqualTo(50);
-    //     assertThat(rest.getDescription()).contains("changes");
-    //     assertThat(rest.getName()).contains("Test");
-    // }
+     @Test
+     @Transactional
+     public void updateRestaurantWorks() throws RestaurantException, AuthenticationException {
+         RestaurantChanges changes = new RestaurantChanges();
+         changes.setAddress(Optional.of("123 Main Street"));
+         changes.setCapacity(Optional.of(50));
+         changes.setDescription(Optional.of("Testing changes to restaurant"));
+         changes.setName(Optional.of("Test Restaurant"));
+         changes.setImageUrl(Optional.of("https://junit.org/junit4/images/junit5-banner.png"));
+         Restaurant rest = restController.update(changes);
+         assertThat(rest.getAddress()).isEqualTo("123 Main Street");
+         assertThat(rest.getCapacity()).isEqualTo(50);
+         assertThat(rest.getDescription()).contains("changes");
+         assertThat(rest.getName()).contains("Test");
+         assertThat(rest.getImageUrl()).contains("junit.org");
+     }
 }
