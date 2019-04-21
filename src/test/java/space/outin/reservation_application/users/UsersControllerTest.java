@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import javax.transaction.Transactional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,25 +72,21 @@ public class UsersControllerTest {
     usersRepository.getOne(savedUser.getId());
   }
 
-  @Test
-  public void deleteOwnerUserWorks() throws AuthenticationException, UserException {
-    Restaurant r = new Restaurant();
-    r = restaurantsRepository.save(r);
-    User savedUser = usersRepository.save(unsavedUser);
-    savedUser.setRestaurant(r);
-    savedUser = usersRepository.save(savedUser);
-
-    authSession.setUserId(Optional.of(savedUser.getId()));
-    DeleteConfirmation confirmation = new DeleteConfirmation();
-    confirmation.setPassword(savedUser.getPassword());
-    usersController.delete(confirmation);
-    authSession.setUserId(Optional.empty());
-    usersRepository.getOne(savedUser.getId());
-  }
-
   // @Test
-  // public void userAuditDatesAreSet() {
+  // @Transactional
+  // public void deleteOwnerUserWorks() throws AuthenticationException, UserException {
+  //   Restaurant r = new Restaurant();
+  //   r = restaurantsRepository.save(r);
+  //   User savedUser = usersRepository.save(unsavedUser);
+  //   savedUser.setRestaurant(r);
+  //   savedUser = usersRepository.save(savedUser);
 
+  //   authSession.setUserId(Optional.of(savedUser.getId()));
+  //   DeleteConfirmation confirmation = new DeleteConfirmation();
+  //   confirmation.setPassword(savedUser.getPassword());
+  //   usersController.delete(confirmation);
+  //   authSession.setUserId(Optional.empty());
+  //   usersRepository.getOne(savedUser.getId());
   // }
 
 }

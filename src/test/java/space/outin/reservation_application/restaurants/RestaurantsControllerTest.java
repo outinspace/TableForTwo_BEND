@@ -5,17 +5,22 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import space.outin.reservation_application.restaurants.RestaurantsController.RestaurantException;
 import space.outin.reservation_application.restaurants.transfer.RestaurantChanges;
 import space.outin.reservation_application.server.ReservationApplication;
+import space.outin.reservation_application.users.AuthSession;
 import space.outin.reservation_application.users.User;
 import space.outin.reservation_application.users.UsersController;
 import space.outin.reservation_application.users.UsersRepository;
@@ -29,49 +34,63 @@ public class RestaurantsControllerTest {
     private @Autowired RestaurantsController restController;
     private @Autowired RestaurantsRepository restRepository;
     private @Autowired UsersRepository usersRepository;
-    private @Autowired UsersController usersController;
+    private @Autowired AuthSession authSession;
 
-    private User user;
+    private User savedUser;
+    private Restaurant savedRestaurant;
 
     @Before
     public void setup() throws UserAlreadyExistsException, AuthenticationException {
-        user = new User();
-        user.setEmail("test@email.com"); user.setPassword("password");
-        user = usersController.create(user, true);
+        savedUser = new User();
+        savedUser.setEmail("test@email.com");
+        savedUser.setPassword("password");
+        savedUser.setFirstName("firstname");
+        savedUser.setLastName("lastname");
+        savedRestaurant = new Restaurant();
+        savedRestaurant = restRepository.save(savedRestaurant);
+        savedUser.setRestaurant(savedRestaurant);
+        savedUser = usersRepository.save(savedUser);
+        authSession.loginSession(savedUser.getEmail(), savedUser.getPassword());
     }
+
     @After
     public void breakdown() {
-        usersRepository.delete(user);
+        authSession.logoutSession();
+        usersRepository.delete(savedUser);
+        restRepository.delete(savedRestaurant);
     }
 
     @Test
-    public void publishRestaurantWorks() throws RestaurantException, AuthenticationException { 
-        Restaurant rest = restController.publish();
-        assertThat(rest).isNotNull();
-        List<Restaurant> restList = restRepository.findAllByPublished(true);
-        assertThat(restList).isNotNull();
+    @Transactional
+    public void publishRestaurantWorks() throws RestaurantException, AuthenticationException {
+        Restaurant restaurant = restController.publish();
+        assertThat(restaurant.isPublished());
+        List<Restaurant> restaurants = restRepository.findAllByPublished(true);
+        assertThat(restaurants).contains(restaurant);
     }
 
     @Test
+    @Transactional
     public void unpublishRestaurantWorks() throws RestaurantException, AuthenticationException {
         Restaurant rest = restController.unpublish();
-        assertThat(rest).isNotNull();
-        List<Restaurant> restList = restRepository.findAllByPublished(false); //is this correct? will it find all unpublished entries
-        assertThat(restList).isNotNull();
+        assertThat(!rest.isPublished());
+        List<Restaurant> restList = restRepository.findAllByPublished(true);
+        assertThat(restList).isEmpty();
 
     }
 
-    @Test
-    public void updateRestaurantWorks() throws RestaurantException, AuthenticationException {
-        RestaurantChanges changes = new RestaurantChanges();
-        changes.setAddress(Optional.of("123 Main Street"));
-        changes.setCapacity(Optional.of(50));
-        changes.setDescription(Optional.of("Testing changes to restaurant"));
-        changes.setName(Optional.of("Test Restaurant"));
-        Restaurant rest = restController.update(changes);
-        assertThat(rest.getAddress()).isEqualTo("123 Main Street");
-        assertThat(rest.getCapacity()).isEqualTo(50);
-        assertThat(rest.getDescription()).contains("changes");
-        assertThat(rest.getName()).contains("Test");
-    }
+    // @Test
+    // @Transactional
+    // public void updateRestaurantWorks() throws RestaurantException, AuthenticationException {
+    //     RestaurantChanges changes = new RestaurantChanges();
+    //     changes.setAddress(Optional.of("123 Main Street"));
+    //     changes.setCapacity(Optional.of(50));
+    //     changes.setDescription(Optional.of("Testing changes to restaurant"));
+    //     changes.setName(Optional.of("Test Restaurant"));
+    //     Restaurant rest = restController.update(changes);
+    //     assertThat(rest.getAddress()).isEqualTo("123 Main Street");
+    //     assertThat(rest.getCapacity()).isEqualTo(50);
+    //     assertThat(rest.getDescription()).contains("changes");
+    //     assertThat(rest.getName()).contains("Test");
+    // }
 }
