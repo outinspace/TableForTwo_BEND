@@ -74,7 +74,7 @@ public class ReservationsController {
         Reservation reservation = reservationsRepository.getOne(id);
         if (reservation == null) {
             throw new ReservationException(ReservationException.RESERVATION_NONEXISTENT);
-        } else if (userOwnsReservationOrRestaurant(reservation, authSession.getUserId().get())) {
+        } else if (!userOwnsReservationOrRestaurant(reservation, authSession.getUserId().get())) {
             throw new ReservationException(ReservationException.INVALID_PERMISSIONS);
         }
         reservationsRepository.deleteById(id);
