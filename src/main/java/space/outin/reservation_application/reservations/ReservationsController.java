@@ -32,8 +32,7 @@ public class ReservationsController {
     private @Autowired RestaurantsRepository restaurantsRepository;
     private @Autowired UsersRepository usersRepository;
 
-    @Autowired
-    private AuthSession authSession;
+    private @Autowired AuthSession authSession;
 
     @GetMapping("/my")
     public List<Reservation> getMyReservations() throws AuthenticationException {
