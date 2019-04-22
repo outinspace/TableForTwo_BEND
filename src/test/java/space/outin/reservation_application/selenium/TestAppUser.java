@@ -11,7 +11,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class TestMakeReservation {
+public class TestAppUser {
   private WebDriver driver;
   private String baseUrl;
   private boolean acceptNextAlert = true;
@@ -31,39 +31,65 @@ public class TestMakeReservation {
   }
 
   @Test
-  public void testMakeReservation() throws Exception {
+  public void testAppUser() throws Exception {
     driver.get("https://reservations.outin.space/reservations/#/");
     Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Reservations Application'])[1]/following::div[2]")).click();
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Reservations Application'])[1]/following::i[1]")).click();
     Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::button[1]")).click();
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::div[18]")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[1]")).clear();
-    Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[1]")).sendKeys("se@test1.com");
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[1]")).sendKeys("user@test.com");
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[2]")).clear();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[2]")).sendKeys("testpass");
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[3]")).clear();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[3]")).sendKeys("test");
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[4]")).clear();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Create New Account'])[1]/following::input[4]")).sendKeys("one");
+    Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Back'])[1]/following::div[1]")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Trending Restaurants'])[1]/following::span[1]")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Close'])[1]/following::div[1]")).click();
     Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='McDonalds'])[1]/following::i[2]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='AM'])[1]/following::div[3]")).click();
+    Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='McDonalds'])[1]/following::input[2]")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='McDonalds'])[1]/following::input[2]")).clear();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='McDonalds'])[1]/following::input[2]")).sendKeys("03:33");
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='McDonalds'])[1]/following::input[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='S'])[2]/following::div[25]")).click();
+    Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[1]/following::div[1]")).click();
     Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Date has already passed.'])[1]/following::div[3]")).click();
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Current Reservations'])[1]/following::div[8]")).click();
     Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Read More'])[1]/following::div[5]")).click();
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Edit Reservation'])[2]/following::div[2]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[2]/following::div[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.id("app-toolbar-title")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Reservations Application'])[1]/following::div[4]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Reservations Application'])[1]/following::i[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='PM'])[2]/following::div[4]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Delete Account'])[1]/following::input[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Delete Account'])[1]/following::input[1]")).clear();
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Delete Account'])[1]/following::input[1]")).sendKeys("testpass");
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Delete Account'])[1]/following::div[10]")).click();
     Thread.sleep(2000);
   }
 
