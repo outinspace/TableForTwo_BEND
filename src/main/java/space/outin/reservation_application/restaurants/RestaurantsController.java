@@ -62,13 +62,22 @@ public class RestaurantsController {
             throws AuthenticationException, RestaurantException {
         Restaurant restaurant = fetchCurrentRestaurantOrThrow();
         restaurant.applyChanges(changes);
+        restaurant.setRegistered(true);
         return restaurantsRepository.save(restaurant);
     }
 
     @PostMapping("/publish")
     public Restaurant publish() throws RestaurantException, AuthenticationException {
         Restaurant restaurant = fetchCurrentRestaurantOrThrow();
-        // TODO: Validate info
+        if (!restaurant.isRegistered()) {
+            throw new RestaurantException(RestaurantException.NOT_REGISTERED);
+        }
+        List<Restaurant> restaurantsWithSameName = restaurantsRepository.findAllByName(restaurant.getName())
+            .stream().filter(r -> r.getId() != restaurant.getId())
+            .collect(Collectors.toList());
+        if (!restaurantsWithSameName.isEmpty()) {
+            throw new RestaurantException(RestaurantException.NAME_IN_USE);
+        }
         restaurant.setPublished(true);
         return restaurantsRepository.save(restaurant);
     }
@@ -97,6 +106,8 @@ public class RestaurantsController {
     public static class RestaurantException extends Exception {
         private static final long serialVersionUID = 6806844114816175549L;
         private static final String NONEXISTENT = "Restaurant does not exist.";
+        private static final String NAME_IN_USE = "Name is already in use by another restaurant.";
+        private static final String NOT_REGISTERED = "Finish restaurant registration before performing this action.";
         public RestaurantException(String e) {
             super(e);
         }

@@ -10,4 +10,5 @@ import space.outin.reservation_application.restaurants.Restaurant;
 @Repository
 public interface RestaurantsRepository extends JpaRepository<Restaurant, Integer> {
     List<Restaurant> findAllByPublished(boolean published);
+    List<Restaurant> findAllByName(String name);
 }

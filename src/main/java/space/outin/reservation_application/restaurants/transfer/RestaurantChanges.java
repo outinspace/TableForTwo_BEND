@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class RestaurantChanges {
     private Optional<@NotBlank String> name;
-    private Optional<@URL String> imageUrl;
+    private Optional<@NotBlank @URL String> imageUrl;
     private Optional<@NotBlank String> description;
     private Optional<@NotBlank String> address;
     private Optional<@NotNull Integer> capacity;
