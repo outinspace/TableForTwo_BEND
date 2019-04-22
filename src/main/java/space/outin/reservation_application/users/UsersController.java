@@ -79,7 +79,7 @@ public class UsersController {
 
     public void verifyEmailIsUnique(Integer id, String email) throws UserAlreadyExistsException {
         Optional<User> existingUser = usersRepository.findOneByEmail(email);
-        if (existingUser.isPresent() && existingUser.get().getId() != id) {
+        if (existingUser.isPresent() && !existingUser.get().getId().equals(id)) {
             throw new UserAlreadyExistsException();
         }
     }

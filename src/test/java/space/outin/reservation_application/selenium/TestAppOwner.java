@@ -9,6 +9,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.DriverManagerType;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class TestAppOwner {
@@ -19,7 +21,7 @@ public class TestAppOwner {
   
   @BeforeClass
   public static void setupClass() {
-    WebDriverManager.chromedriver().setup();
+    ChromeDriverManager.getInstance(DriverManagerType.CHROME).setup();
   }
 
   @Before

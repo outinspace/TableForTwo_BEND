@@ -68,7 +68,9 @@ public class ReservationsController {
             throw new ReservationException(ReservationException.RESERVATION_NONEXISTENT);
         }
         Reservation existingReservation = reservation.get();
-        if (existingReservation.getUser().getId() != authSession.getUserId().get()) {
+        int reservationUserId = existingReservation.getUser().getId();
+        int currentUserId = authSession.getUserId().get();
+        if (reservationUserId != currentUserId) {
             throw new ReservationException(ReservationException.INVALID_PERMISSIONS);
         }
         existingReservation.applyChanges(changes);
@@ -94,11 +96,11 @@ public class ReservationsController {
     }
 
     public boolean userOwnsReservationOrRestaurant(Reservation reservation, Integer currentUserId) {
-        if (reservation.getUser().getId() == currentUserId) {
+        if (reservation.getUser().getId().equals(currentUserId)) {
             return true;
         }
         Optional<User> restaurantOwner = usersRepository.findOneByRestaurant(reservation.getRestaurant());
-        if (restaurantOwner.isPresent() && restaurantOwner.get().getId() == currentUserId) {
+        if (restaurantOwner.isPresent() && restaurantOwner.get().getId().equals(currentUserId)) {
             return true;
         }
         return false;

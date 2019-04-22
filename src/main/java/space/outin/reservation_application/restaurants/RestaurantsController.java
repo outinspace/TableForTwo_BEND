@@ -73,7 +73,7 @@ public class RestaurantsController {
             throw new RestaurantException(RestaurantException.NOT_REGISTERED);
         }
         List<Restaurant> restaurantsWithSameName = restaurantsRepository.findAllByName(restaurant.getName())
-            .stream().filter(r -> r.getId() != restaurant.getId())
+            .stream().filter(r -> !r.getId().equals(restaurant.getId()))
             .collect(Collectors.toList());
         if (!restaurantsWithSameName.isEmpty()) {
             throw new RestaurantException(RestaurantException.NAME_IN_USE);
