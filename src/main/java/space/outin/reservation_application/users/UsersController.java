@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +28,14 @@ public class UsersController {
     private @Autowired RestaurantsRepository restaurantsRepository;
     private @Autowired AuthSession authSession;
     private @Autowired UserService userService;
+    private @Autowired PasswordEncoder passwordEncoder;
 
     @PostMapping("/create")
     public User create(@RequestBody @Valid User u, @RequestParam(required = false) boolean isOwner)
             throws UserAlreadyExistsException, AuthenticationException {
         u.setId(null);
+        String rawPassword = u.getPassword();
+        u.setPassword(passwordEncoder.encode(u.getPassword()));
         verifyEmailIsUnique(null, u.getEmail());
         authSession.logoutSession();
         if (isOwner) {
@@ -39,7 +44,7 @@ public class UsersController {
         }
 
         usersRepository.save(u);
-        return authSession.loginSession(u.getEmail(), u.getPassword());
+        return authSession.loginSession(u.getEmail(), rawPassword);
     }
 
     @PostMapping("/update")
@@ -55,6 +60,9 @@ public class UsersController {
             }
         }
         user.applyChanges(changes);
+        if (changes.getPassword().isPresent()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return usersRepository.save(user);
     }
 
@@ -62,7 +70,7 @@ public class UsersController {
     public void delete(@RequestBody DeleteConfirmation passwordCheck) throws AuthenticationException, UserException {
         authSession.verifyAuthOrThrow();
         User currentUser = authSession.fetchCurrentUser();
-        if (!currentUser.getPassword().equals(passwordCheck.getPassword())) {
+        if (!passwordEncoder.matches(passwordCheck.getPassword(), currentUser.getPassword())) {
             throw new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS);
         }
         authSession.logoutSession();

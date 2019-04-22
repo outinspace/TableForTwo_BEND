@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
@@ -13,9 +15,9 @@ import lombok.Data;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Data
 public class AuthSession {
-
-    @Autowired
-    private UsersRepository usersRepository;
+ 
+    private @Autowired UsersRepository usersRepository;
+    private @Autowired PasswordEncoder passwordEncoder;
 
     private Optional<Integer> userId = Optional.empty();
 
@@ -24,7 +26,7 @@ public class AuthSession {
         User currentUser = userResult.orElseThrow(
                 () -> new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS));
         
-        if (!password.equals(currentUser.getPassword())) {
+        if (!passwordEncoder.matches(password, currentUser.getPassword())) {
             throw new AuthenticationException(AuthenticationException.INVALID_CREDENTIALS);
         }
         userId = Optional.of(currentUser.getId());

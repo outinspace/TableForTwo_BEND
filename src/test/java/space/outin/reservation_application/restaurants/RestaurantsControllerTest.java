@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import space.outin.reservation_application.restaurants.RestaurantsController.RestaurantException;
@@ -32,6 +33,7 @@ public class RestaurantsControllerTest {
     private @Autowired RestaurantsRepository restRepository;
     private @Autowired UsersRepository usersRepository;
     private @Autowired AuthSession authSession;
+    private @Autowired PasswordEncoder passwordEncoder;
 
     private User savedUser;
     private Restaurant savedRestaurant;
@@ -40,14 +42,15 @@ public class RestaurantsControllerTest {
     public void setup() throws UserAlreadyExistsException, AuthenticationException {
         savedUser = new User();
         savedUser.setEmail("test@email.com");
-        savedUser.setPassword("password");
+        savedUser.setPassword(passwordEncoder.encode("password"));
         savedUser.setFirstName("firstname");
         savedUser.setLastName("lastname");
         savedRestaurant = new Restaurant();
+        savedRestaurant.setRegistered(true);
         savedRestaurant = restRepository.save(savedRestaurant);
         savedUser.setRestaurant(savedRestaurant);
         savedUser = usersRepository.save(savedUser);
-        authSession.loginSession(savedUser.getEmail(), savedUser.getPassword());
+        authSession.loginSession(savedUser.getEmail(), "password");
     }
 
     @After
@@ -73,7 +76,6 @@ public class RestaurantsControllerTest {
         assertThat(!restaurant.isPublished());
         List<Restaurant> restaurantList = restRepository.findAllByPublished(true);
         assertThat(restaurantList).isEmpty();
-
     }
 
      @Test
