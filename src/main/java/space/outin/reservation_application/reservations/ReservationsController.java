@@ -1,5 +1,6 @@
 package space.outin.reservation_application.reservations;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,10 +63,17 @@ public class ReservationsController {
     public Reservation update(@RequestBody @Valid ReservationChanges changes, @PathVariable Integer id)
             throws ReservationException, AuthenticationException {
         authSession.verifyAuthOrThrow();
-        Reservation reservation = reservationsRepository.findById(id).get();
-        reservation.applyChanges(changes);
-        checkDateAndCapacity(reservation);
-        return reservationsRepository.save(reservation);
+        Optional<Reservation> reservation = reservationsRepository.findById(id);
+        if (!reservation.isPresent()) {
+            throw new ReservationException(ReservationException.RESERVATION_NONEXISTENT);
+        }
+        Reservation existingReservation = reservation.get();
+        if (existingReservation.getUser().getId() != authSession.getUserId().get()) {
+            throw new ReservationException(ReservationException.INVALID_PERMISSIONS);
+        }
+        existingReservation.applyChanges(changes);
+        checkDateAndCapacity(existingReservation);
+        return reservationsRepository.save(existingReservation);
     }
     
     @PostMapping("/delete/{id}")
@@ -95,23 +103,12 @@ public class ReservationsController {
         }
         return false;
     }
-
-    public static class ReservationException extends Exception {
-        public static String RESERVATION_NONEXISTENT = "Reservation does not exist.";
-        public static String RESTAURANT_NONEXISTENT = "Restaurant does not exist.";
-        public static String RESTAURANT_AT_CAPACITY = "Restaurant is at capacity.";
-        public static String TIME_IMPOSSIBLE = "Date has already passed.";
-        public static String INVALID_PERMISSIONS = "You do not have permissions to perform this action.";
-        public ReservationException(String s) {
-            super(s);
-        }
-    }
     
     private void checkDateAndCapacity (Reservation reservation) throws ReservationException {
         Restaurant restaurant = reservation.getRestaurant();
         Date date = reservation.getDate();
-        Date time = new Date(); 
-        if (date.compareTo(time) < 0) { //if before current time
+        Date timeLimit = new Date(new Date().getTime() + 3600*1000);
+        if (date.before(timeLimit)) {
             throw new ReservationException(ReservationException.TIME_IMPOSSIBLE);
         }
         List<Reservation> currentReservationsForRestaurant = restaurant.getReservations();
@@ -127,6 +124,16 @@ public class ReservationsController {
         if (reseCount >= restaurant.getCapacity()) {
             throw new ReservationException(ReservationException.RESTAURANT_AT_CAPACITY);
         }
-        
+    }
+
+    public static class ReservationException extends Exception {
+        public static String RESERVATION_NONEXISTENT = "Reservation does not exist.";
+        public static String RESTAURANT_NONEXISTENT = "Restaurant does not exist.";
+        public static String RESTAURANT_AT_CAPACITY = "Restaurant is at capacity.";
+        public static String TIME_IMPOSSIBLE = "Reservation must be placed at least an hour in advance.";
+        public static String INVALID_PERMISSIONS = "You do not have permissions to perform this action.";
+        public ReservationException(String s) {
+            super(s);
+        }
     }
 }
