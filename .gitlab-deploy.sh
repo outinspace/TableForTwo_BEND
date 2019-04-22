@@ -5,7 +5,7 @@ chmod 600 aws.pem
 mkdir ~/.ssh
 ssh-keyscan $DEPLOY_SERVER >> ~/.ssh/known_hosts
 
-mvn package
+mvn -Dmaven.test.skip=true package
 
 ssh -i aws.pem ubuntu@$DEPLOY_SERVER "sudo systemctl stop reservation-application"
 
