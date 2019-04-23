@@ -55,16 +55,6 @@ public class TestAppUser {
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[1]/following::div[1]")).click();
     Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Current Reservations'])[1]/following::div[8]")).click();
-    Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Edit'])[1]/following::div[2]")).click();
-    Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[2]/following::button[1]")).click();
-    Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Two'])[1]/following::div[2]")).click();
-    Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Account'])[1]/following::div[2]")).click();
-    Thread.sleep(2000);
   }
 
   @After
