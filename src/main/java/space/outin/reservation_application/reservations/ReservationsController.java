@@ -133,13 +133,15 @@ public class ReservationsController {
         long t = date.getTime();
         Date afterAddingThirtyMins = new Date (t + (30 * ONE_MINUTE_IN_MILLIS));
         Date afterSubtractingThirtyMins = new Date (t - (30 * ONE_MINUTE_IN_MILLIS));
-        for (Reservation rese : currentReservationsForRestaurant) {
-            if (rese.getDate().compareTo(afterAddingThirtyMins) <= 0 && rese.getDate().compareTo(afterSubtractingThirtyMins) >= 0 ) {
-                reseCount++;
+        if (currentReservationsForRestaurant != null) {
+            for (Reservation rese : currentReservationsForRestaurant) {
+                if (rese.getDate().compareTo(afterAddingThirtyMins) <= 0 && rese.getDate().compareTo(afterSubtractingThirtyMins) >= 0 ) {
+                    reseCount++;              
+                }
             }
-        }
-        if (reseCount >= restaurant.getCapacity()) {
-            throw new ReservationException(ReservationException.RESTAURANT_AT_CAPACITY);
+            if (reseCount >= restaurant.getCapacity()) {
+                throw new ReservationException(ReservationException.RESTAURANT_AT_CAPACITY);
+            }
         }
     }
 
