@@ -33,38 +33,38 @@ public class TestAppUser {
   @Test
   public void testAppUser() throws Exception {
     driver.get("https://reservations.outin.space/reservations/#/");
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Two'])[1]/following::i[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[1]")).clear();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[1]")).sendKeys("user@test.com");
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[2]")).clear();
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[2]")).sendKeys("testpass");
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[2]")).sendKeys(Keys.ENTER);
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Trending Restaurants'])[1]/following::span[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Close'])[1]/following::div[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Blue Sushi'])[1]/following::input[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='S'])[2]/following::div[27]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[1]/following::div[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Blue Sushi'])[2]/following::div[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Edit'])[1]/following::div[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[2]/following::div[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Two'])[1]/following::button[1]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Account'])[1]/following::div[2]")).click();
-    Thread.sleep(2000);
+    Thread.sleep(3000);
   }
 
   @After
