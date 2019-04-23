@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import javax.transaction.Transactional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,6 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import space.outin.reservation_application.restaurants.Restaurant;
 import space.outin.reservation_application.restaurants.RestaurantsRepository;
 import space.outin.reservation_application.server.ReservationApplication;
 import space.outin.reservation_application.users.AuthSession.AuthenticationException;
