@@ -43,6 +43,7 @@ public class Reservation {
     private Date date;
     @Column(columnDefinition = "VARCHAR(256)")
     private String notes;
+    private boolean completed;
 
     @JsonProperty(access=Access.READ_ONLY)
     @CreationTimestamp

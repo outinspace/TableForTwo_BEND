@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -40,6 +41,7 @@ public class Restaurant {
     private boolean published;
     private boolean registered;
 
+    @JsonIgnore
     @OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
     private List<Reservation> reservations;
 

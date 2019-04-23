@@ -105,6 +105,21 @@ public class ReservationsController {
         }
         return false;
     }
+
+    @PostMapping("/completed/{completed}/{id}")
+    public Reservation markReservationCompleted(@PathVariable boolean completed, @PathVariable Integer id) throws ReservationException, AuthenticationException {
+        authSession.verifyAuthOrThrow();
+        Optional<Reservation> r = reservationsRepository.findById(id);
+        if (!r.isPresent()) {
+            throw new ReservationException(ReservationException.RESERVATION_NONEXISTENT);
+        }
+        Reservation reservation = r.get();
+        if (!userOwnsReservationOrRestaurant(reservation, authSession.getUserId().get())) {
+            throw new ReservationException(ReservationException.INVALID_PERMISSIONS);
+        }
+        reservation.setCompleted(completed);
+        return reservationsRepository.save(reservation);
+    }
     
     private void checkDateAndCapacity (Reservation reservation) throws ReservationException {
         Restaurant restaurant = reservation.getRestaurant();
