@@ -34,7 +34,7 @@ public class TestAppUser {
   public void testAppUser() throws Exception {
     driver.get("https://reservations.outin.space/reservations/#/");
     Thread.sleep(2000);
-    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Two'])[1]/following::div[2]")).click();
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Two'])[1]/following::i[1]")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Login'])[1]/following::input[1]")).click();
     Thread.sleep(2000);
@@ -54,6 +54,16 @@ public class TestAppUser {
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='S'])[2]/following::div[27]")).click();
     Thread.sleep(2000);
     driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[1]/following::div[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Blue Sushi'])[2]/following::div[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Edit'])[1]/following::div[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Cancel'])[2]/following::div[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Two'])[1]/following::button[1]")).click();
+    Thread.sleep(2000);
+    driver.findElement(By.xpath("(.//*[normalize-space(text()) and normalize-space(.)='Account'])[1]/following::div[2]")).click();
     Thread.sleep(2000);
   }
 
