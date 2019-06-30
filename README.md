@@ -1,4 +1,6 @@
-# Reservations Application Back-end
+# TableForTwo Backend
+
+Live DEMO: http://reservations.outin.space/reservations
 
 Before running this project, you must install Java >=1.8 on your machine.
 
